@@ -14,8 +14,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isDarkMode = false; // 你可以根据实际情况设置
+
   return (
-    <html lang="en">
+    <html lang="en" className={isDarkMode ? 'dark' : ''}>
       <body className={inter.className}>{children}</body>
     </html>
   );
