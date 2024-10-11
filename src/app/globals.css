@@ -26,6 +26,8 @@
     --radius: 0rem;
   }
 
+
+
   .dark {
     --background: 224 71.4% 4.1%;
     --foreground: 210 20% 98%;
@@ -60,12 +62,6 @@
   gap: 16px;
 }
 
-.card-wrapper {
-  position: relative;
-  width: 300px;
-  height: 400px;
-  perspective: 1000px; /* 3D视角 */
-}
 
 .card-wrapper .card {
   position: absolute;

@@ -96,4 +96,15 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = "CardFooter";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent };
+
+
+const CardWrapper = ({ children, className }) => {
+  return (
+    <div className={cn("card-wrapper mx-auto w-full max-w-sm ", className)}>
+      {children}
+    </div>
+  );
+};
+
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent,CardWrapper};

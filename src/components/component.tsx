@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardWrapper } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { RotatingLines } from "react-loader-spinner";
 import ReactCardFlip from "react-card-flip";
@@ -17,23 +17,6 @@ export function Component() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [flippedIndexes, setFlippedIndexes] = useState<number[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const fullText = Array.from("寻找穿越千年的心意相通");
-
-  useEffect(() => {
-    let index = 0;
-    const intervalId = setInterval(() => {
-      if (index < fullText.length) {
-        const nextChar = fullText[index]; // 先将 fullText[index] 的值保存到一个变量中
-        setText((prev) => {
-          return prev + nextChar; // 在 setText 函数中使用这个变量
-        });
-        index++;
-      } else {
-        clearInterval(intervalId);
-      }
-    }, 200); // 200ms 打字间隔
-    return () => clearInterval(intervalId);
-  }, []);
 
   const handleError = () => {
     const errorMessage = '出错了，请稍后再试';
@@ -48,7 +31,7 @@ export function Component() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ title: poem.title, author: poem.author, content: poem.content }),
-        signal, // 将 signal 传递给 fetch
+        signal,
       });
       const descriptionData = await descriptionRes.json();
       setDescriptions((prev) => {
@@ -76,22 +59,19 @@ export function Component() {
       return;
     }
 
-    // 取消之前的描述获取请求
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // 创建新的 AbortController 实例
     const newAbortController = new AbortController();
     abortControllerRef.current = newAbortController;
 
-    // 清理上一次的数据
     setResponse([]);
     setDescriptions([]);
     setFlippedIndexes([]);
 
     setIsSubmitting(true);
-    setIsBlurred(true); // 开始加载时模糊卡片
+    setIsBlurred(true);
     setIsLoading(true);
 
     try {
@@ -104,11 +84,10 @@ export function Component() {
       });
       const data = await res.json();
       setResponse(data.poems);
-      setIsBlurred(false); // 移除模糊效果
+      setIsBlurred(false);
       setIsLoading(false);
       setIsSubmitting(false);
 
-      // Fetch descriptions for each poem in the background
       data.poems.forEach((poem, index) => {
         fetchDescription(index, poem, newAbortController.signal);
       });
@@ -127,7 +106,7 @@ export function Component() {
   };
 
   return (
-    <div className="grid min-h-screen w-full bg-primary grid place-items-center">
+    <div className="grid min-h-screen w-full place-items-center">
       <div className="flex flex-col items-center justify-center bg-background/80 p-4 w-full"> 
         <div className="max-w-4xl w-full space-y-4">
           <div className="flex flex-col items-center justify-center space-y-4">
@@ -159,85 +138,89 @@ export function Component() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
-                <Card key={index} className="relative">
-                  <CardContent className="p-6 space-y-4 blur-sm">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="w-10 h-10 border">
-                          <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                          <AvatarFallback>AC</AvatarFallback>
-                        </Avatar>
-                        <div className="text-sm font-semibold">李清照</div>
-                      </div>
-                      <div className="text-xs text-gray-500">宋</div>
-                    </div>
-                    <div className="text-gray-500 text-sm">
-                      <h3 className="font-semibold">如梦令·昨夜雨疏风骤</h3>
-                      <p>昨夜雨疏风骤，浓睡不消残酒。试问卷帘人，却道海棠依旧。知否，知否？应是绿肥红瘦。</p>
-                    </div>
-                  </CardContent>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <RotatingLines
-                      strokeColor="black"
-                      strokeWidth="3"
-                      animationDuration="0.75"
-                      width="80"
-                      visible={true}
-                    />
-                  </div>
-                </Card>
-              ))
-            ) : response.length === 0 ? (
-              Array.from({ length: 3 }).map((_, index) => (
-                <Card key={index} >
-                  <CardContent className="p-6 space-y-4 blur-sm">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Avatar className="w-10 h-10 border">
-                          <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                          <AvatarFallback>AC</AvatarFallback>
-                        </Avatar>
-                        <div className="text-sm font-semibold">李清照</div>
-                      </div>
-                      <div className="text-xs text-gray-500">宋</div>
-                    </div>
-                    <div className="text-gray-500 text-sm">
-                      <h3 className="font-semibold">如梦令·昨夜雨疏风骤</h3>
-                      <p>昨夜雨疏风骤，浓睡不消残酒。试问卷帘人，却道海棠依旧。知否，知否？应是绿肥红瘦。</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              response.map((item, index) => (
-                <ReactCardFlip key={index} isFlipped={flippedIndexes.includes(index)} >
-                  <div className="card-wrapper">
-                  <Card onClick={() => handleCardClick(index)} className={`${isBlurred ? 'blur-sm' : ''}`}>
-                    <CardContent className="p-6 space-y-4">
+                <CardWrapper key={index}>
+                  <Card className="relative mx-auto w-full max-w-sm">
+                    <CardContent className="p-6 space-y-4 blur-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Avatar className="w-10 h-10 border">
                             <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
                             <AvatarFallback>AC</AvatarFallback>
                           </Avatar>
-                          <div className="text-sm font-semibold">{item.author}</div>
+                          <div className="text-sm font-semibold">李清照</div>
                         </div>
-                        <div className="text-xs text-gray-500">{item.dynasty}</div>
+                        <div className="text-xs text-gray-500">宋</div>
                       </div>
                       <div className="text-gray-500 text-sm">
-                        <h3 className="font-semibold">{item.title}</h3>
-                        <p>{item.content}</p>
+                        <h3 className="font-semibold">如梦令·昨夜雨疏风骤</h3>
+                        <p>昨夜雨疏风骤，浓睡不消残酒。试问卷帘人，却道海棠依旧。知否，知否？应是绿肥红瘦。</p>
+                      </div>
+                    </CardContent>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <RotatingLines
+                        strokeColor="black"
+                        strokeWidth="3"
+                        animationDuration="0.75"
+                        width="80"
+                        visible={true}
+                      />
+                    </div>
+                  </Card>
+                </CardWrapper>
+              ))
+            ) : response.length === 0 ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <CardWrapper key={index}>
+                  <Card className="mx-auto w-full max-w-sm">
+                    <CardContent className="p-6 space-y-4 blur-sm">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Avatar className="w-10 h-10 border">
+                            <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
+                            <AvatarFallback>AC</AvatarFallback>
+                          </Avatar>
+                          <div className="text-sm font-semibold">李清照</div>
+                        </div>
+                        <div className="text-xs text-gray-500">宋</div>
+                      </div>
+                      <div className="text-gray-500 text-sm">
+                        <h3 className="font-semibold">如梦令·昨夜雨疏风骤</h3>
+                        <p>昨夜雨疏风骤，浓睡不消残酒。试问卷帘人，却道海棠依旧。知否，知否？应是绿肥红瘦。</p>
                       </div>
                     </CardContent>
                   </Card>
-                  </div>
-                  <div className="card-wrapper">
+                </CardWrapper>
+              ))
+            ) : (
+              response.map((item, index) => (
+                <ReactCardFlip key={index} isFlipped={flippedIndexes.includes(index)}>
+                  <CardWrapper className="">
+                    <Card onClick={() => handleCardClick(index)} className={`${isBlurred ? 'blur-sm' : ''}`}>
+                      <CardContent className="p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Avatar className="w-10 h-10 border">
+                              <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
+                              <AvatarFallback>AC</AvatarFallback>
+                            </Avatar>
+                            <div className="text-sm font-semibold">{item.author}</div>
+                          </div>
+                          <div className="text-xs text-gray-500">{item.dynasty}</div>
+                        </div>
+                        <div className="text-gray-500 text-sm">
+                          <h3 className="font-semibold">{item.title}</h3>
+                          <p>{item.content}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CardWrapper>
+                  <CardWrapper className="">
                     <Card onClick={() => handleCardClick(index)}>
                       <CardContent className="p-6 space-y-4 flex items-center justify-center">
                         <div className="text-sm font-semibold">{descriptions[index]}</div>
                       </CardContent>
                     </Card>
-                  </div>
+                  </CardWrapper>
                 </ReactCardFlip>
               ))
             )}
