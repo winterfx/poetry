@@ -14,10 +14,6 @@ npm run flask-dev
 ```
 Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically opt
-
 ## Demo
 ![](./public/1.png)
 
