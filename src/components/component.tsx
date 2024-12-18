@@ -6,6 +6,7 @@ import { Card, CardContent, CardWrapper } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { RotatingLines } from "react-loader-spinner";
 import ReactCardFlip from "react-card-flip";
+import { FallingCharacters } from "./falling-characters";
 
 export function Component() {
   const [userInput, setUserInput] = useState('');
@@ -106,40 +107,93 @@ export function Component() {
   };
 
   return (
-    <div className="grid min-h-screen w-full place-items-center">
-      <div className="flex flex-col items-center justify-center bg-background/80 p-4 w-full"> 
-        <div className="max-w-4xl w-full space-y-4">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="flex space-x-4">
-              <img src="/ci_rhythmic_topK.png" className="w-50 h-40 object-cover rounded-full" />
-            </div>
-            
-            <div className="relative w-full">
+    <div 
+      className="relative min-h-screen w-full"
+      style={{
+        background: `
+          repeating-linear-gradient(
+            90deg,
+            rgb(186, 154, 112) 0px,
+            rgb(186, 154, 112) 3px,
+            rgb(175, 143, 101) 3px,
+            rgb(175, 143, 101) 45px,
+            rgb(164, 132, 90) 45px,
+            rgb(164, 132, 90) 90px
+          ),
+          linear-gradient(
+            to right,
+            rgb(186, 154, 112),
+            rgb(175, 143, 101)
+          )
+        `,
+        backgroundBlendMode: 'multiply',
+      }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `
+            repeating-linear-gradient(
+              180deg,
+              rgba(0, 0, 0, 0.03) 0px,
+              rgba(0, 0, 0, 0.03) 1px,
+              transparent 1px,
+              transparent 30px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              rgba(139, 109, 71, 0.1) 0px,
+              rgba(139, 109, 71, 0.1) 2px,
+              transparent 2px,
+              transparent 90px
+            ),
+            linear-gradient(
+              45deg,
+              rgba(0, 0, 0, 0.02) 25%,
+              transparent 25%,
+              transparent 75%,
+              rgba(0, 0, 0, 0.02) 75%
+            )
+          `,
+          backgroundSize: '90px 30px, 90px 30px, 180px 180px',
+          opacity: 0.8
+        }}
+      />
+      <FallingCharacters />
+      <div className="relative flex flex-col items-center justify-center w-full min-h-screen z-10"> 
+        <div className="max-w-3xl w-full space-y-8 px-4">
+          <div className="flex flex-col items-center justify-center space-y-8">
+            <div className="relative w-full backdrop-blur-sm bg-white/40 rounded-xl p-2 shadow-lg">
               <Textarea
-                className="pr-16 w-full"
+                className="pr-16 w-full bg-white/60 rounded-lg border-2 border-amber-900/20
+                          font-kai text-lg placeholder:text-gray-600/80 placeholder:font-kai
+                          focus:border-amber-900/40 focus:ring-amber-900/40 transition-all duration-300"
                 rows={3}
                 placeholder="写下此刻感受，寻找穿越千年的心意相通..."
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
               />
-              <div className="absolute top-1/2 right-2 -translate-y-1/2">
+              <div className="absolute top-1/2 right-3 -translate-y-1/2">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className={isSubmitting ? 'bg-gray-400 cursor-not-allowed' : ''}
+                  className={`rounded-full p-3 hover:scale-110 transition-all duration-300 
+                            ${isSubmitting ? 'bg-gray-400/70 cursor-not-allowed' : 
+                                          'bg-amber-800/10 hover:bg-amber-800/20 border-amber-900/20'}`}
                 >
-                  ✉️ 
+                  <span className="text-xl">✉️</span>
                 </Button>
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <CardWrapper key={index}>
-                  <Card className="relative mx-auto w-full max-w-sm">
+                  <Card className="relative mx-auto w-full min-h-[300px] backdrop-blur-sm bg-white/60 border-2 border-amber-900/20 shadow-lg">
                     <CardContent className="p-6 space-y-4 blur-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -171,7 +225,7 @@ export function Component() {
             ) : response.length === 0 ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <CardWrapper key={index}>
-                  <Card className="mx-auto w-full max-w-sm">
+                  <Card className="mx-auto w-full min-h-[300px] backdrop-blur-sm bg-white/60 border-2 border-amber-900/20 shadow-lg">
                     <CardContent className="p-6 space-y-4 blur-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -194,30 +248,39 @@ export function Component() {
             ) : (
               response.map((item, index) => (
                 <ReactCardFlip key={index} isFlipped={flippedIndexes.includes(index)}>
-                  <CardWrapper className="">
-                    <Card onClick={() => handleCardClick(index)} className={`${isBlurred ? 'blur-sm' : ''}`}>
-                      <CardContent className="p-6 space-y-4">
+                  <CardWrapper>
+                    <Card 
+                      onClick={() => handleCardClick(index)} 
+                      className={`backdrop-blur-sm bg-white/60 border-2 border-amber-900/20 shadow-lg
+                                hover:shadow-xl transition-all duration-300 cursor-pointer min-h-[300px]
+                                ${isBlurred ? 'blur-sm' : ''}`}
+                    >
+                      <CardContent className="p-6 space-y-5">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-10 h-10 border">
+                          <div className="flex items-center gap-4">
+                            <Avatar className="w-12 h-12 border-2 border-amber-900/20">
                               <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                              <AvatarFallback>AC</AvatarFallback>
+                              <AvatarFallback>诗</AvatarFallback>
                             </Avatar>
-                            <div className="text-sm font-semibold">{item.author}</div>
+                            <div className="font-kai text-lg text-amber-900">{item.author}</div>
                           </div>
-                          <div className="text-xs text-gray-500">{item.dynasty}</div>
+                          <div className="text-base text-amber-800/70 font-kai">{item.dynasty}</div>
                         </div>
-                        <div className="text-gray-500 text-sm">
-                          <h3 className="font-semibold">{item.title}</h3>
-                          <p>{item.content}</p>
+                        <div className="space-y-3 mt-3">
+                          <h3 className="font-kai text-xl text-amber-900 border-b border-amber-900/20 pb-3">{item.title}</h3>
+                          <p className="font-kai text-lg text-gray-700 leading-relaxed whitespace-pre-line">{item.content}</p>
                         </div>
                       </CardContent>
                     </Card>
                   </CardWrapper>
-                  <CardWrapper className="">
-                    <Card onClick={() => handleCardClick(index)}>
-                      <CardContent className="p-6 space-y-4 flex items-center justify-center">
-                        <div className="text-sm font-semibold">{descriptions[index]}</div>
+                  <CardWrapper>
+                    <Card 
+                      onClick={() => handleCardClick(index)}
+                      className="backdrop-blur-sm bg-white/60 border-2 border-amber-900/20 shadow-lg
+                               hover:shadow-xl transition-all duration-300 cursor-pointer min-h-[300px]"
+                    >
+                      <CardContent className="p-6 flex items-center justify-center min-h-[300px]">
+                        <div className="font-kai text-lg text-gray-700 leading-relaxed">{descriptions[index]}</div>
                       </CardContent>
                     </Card>
                   </CardWrapper>
