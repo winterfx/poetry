@@ -110,55 +110,13 @@ export function Component() {
     <div 
       className="relative min-h-screen w-full"
       style={{
-        background: `
-          repeating-linear-gradient(
-            90deg,
-            rgb(186, 154, 112) 0px,
-            rgb(186, 154, 112) 3px,
-            rgb(175, 143, 101) 3px,
-            rgb(175, 143, 101) 45px,
-            rgb(164, 132, 90) 45px,
-            rgb(164, 132, 90) 90px
-          ),
-          linear-gradient(
-            to right,
-            rgb(186, 154, 112),
-            rgb(175, 143, 101)
-          )
-        `,
-        backgroundBlendMode: 'multiply',
+        background: `linear-gradient(to right,
+          rgb(186, 154, 112),
+          rgb(175, 143, 101),
+          rgb(186, 154, 112)
+        )`
       }}
     >
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            repeating-linear-gradient(
-              180deg,
-              rgba(0, 0, 0, 0.03) 0px,
-              rgba(0, 0, 0, 0.03) 1px,
-              transparent 1px,
-              transparent 30px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              rgba(139, 109, 71, 0.1) 0px,
-              rgba(139, 109, 71, 0.1) 2px,
-              transparent 2px,
-              transparent 90px
-            ),
-            linear-gradient(
-              45deg,
-              rgba(0, 0, 0, 0.02) 25%,
-              transparent 25%,
-              transparent 75%,
-              rgba(0, 0, 0, 0.02) 75%
-            )
-          `,
-          backgroundSize: '90px 30px, 90px 30px, 180px 180px',
-          opacity: 0.8
-        }}
-      />
       <FallingCharacters />
       <div className="relative flex flex-col items-center justify-center w-full min-h-screen z-10"> 
         <div className="max-w-3xl w-full space-y-8 px-4">
