@@ -56,13 +56,12 @@ export const FallingCharacters = () => {
       }
 
       draw(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = `rgba(0, 0, 0, ${this.opacity})`; 
+        ctx.fillStyle = `rgba(0, 0, 0, ${this.opacity * 0.3})`; 
         ctx.font = `${this.fontSize}px "KaiTi", "楷体", serif`;
         ctx.fillText(this.char, this.x, this.y);
       }
 
       update() {
-        this.y += this.speed;
         if (this.y > window.innerHeight) {
           this.y = -20;
           this.x = Math.random() * window.innerWidth;
@@ -70,6 +69,7 @@ export const FallingCharacters = () => {
           this.opacity = 0.6 + Math.random() * 0.3;
           this.fontSize = 14 + Math.random() * 16;
         }
+        this.y += this.speed;
       }
     }
 
