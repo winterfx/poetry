@@ -94,11 +94,8 @@ def askAI(input,local=False):
     user_prompt = input
     res=generateAnswer(sys_prompt,user_prompt,local)
     # parse the response to json format
-    print("====================")
-    print(res)
 
     parsed_response = parseResponse(res)
-    print(parsed_response)
     return parsed_response
 
 def generateAnswer(sys_prompt,user_prompt,local=False):
@@ -121,18 +118,18 @@ def generateAnswer(sys_prompt,user_prompt,local=False):
         response = generateAnswerByGPT(sys_prompt, user_prompt, model)
         return response
     
-# def generateAnswerByRAG(prompt):
-#     index=getVectorStore()
-#     query_engine = index.as_query_engine()
-#     response = query_engine.query(prompt)
+def generateAnswerByRAG(prompt):
+    index=getVectorStore()
+    query_engine = index.as_query_engine()
+    response = query_engine.query(prompt)
         
-#     # Get the encoding for the model and calculate the token usage
-#     encoding = tiktoken.encoding_for_model(model)
-#     input_tokens = encoding.encode(prompt)
-#     output_tokens = encoding.encode(response.__str__())
-#     print(f"Response:\n{response} \n")
-#     print(f"Token Usage: \ncompletion_tokens:{len(output_tokens)} | prompt_token:{len(input_tokens)} | total_tokens:{len(input_tokens) + len(output_tokens)}\n")
-#     return response.__str__()
+    # Get the encoding for the model and calculate the token usage
+    encoding = tiktoken.encoding_for_model(model)
+    input_tokens = encoding.encode(prompt)
+    output_tokens = encoding.encode(response.__str__())
+    print(f"Response:\n{response} \n")
+    print(f"Token Usage: \ncompletion_tokens:{len(output_tokens)} | prompt_token:{len(input_tokens)} | total_tokens:{len(input_tokens) + len(output_tokens)}\n")
+    return response.__str__()
 
 def generateAnswerByGPT(system_prompt, user_prompt, model)->str:
     """
